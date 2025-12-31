@@ -217,6 +217,27 @@ a {
     letter-spacing: 1px;
 }
 
+.signal-card-link {
+    display: block;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.signal-card-link:hover {
+    transform: translateY(-4px);
+    border-color: var(--electric);
+    box-shadow: 0 8px 25px rgba(25, 200, 255, 0.2);
+}
+
+.signal-card-link h3 {
+    transition: color 0.2s ease;
+}
+
+.signal-card-link:hover h3 {
+    color: var(--electric);
+}
+
 .section-title {
     font-family: var(--font-mono);
     font-size: 0.95rem;

@@ -115,20 +115,20 @@
             }
         }
 
-        // Post cards - staggered reveal on scroll
+        // Post cards - staggered reveal on scroll (don't reverse on scroll back)
         const postCards = document.querySelectorAll('.post-card');
         postCards.forEach((card, index) => {
             gsap.from(card, {
                 scrollTrigger: {
                     trigger: card,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse'
+                    start: 'top 95%',
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
-                y: 60,
-                scale: 0.95,
-                duration: 0.7,
-                delay: index * 0.15,
+                y: 40,
+                scale: 0.98,
+                duration: 0.6,
+                delay: index * 0.1,
                 ease: 'power2.out'
             });
         });
@@ -140,7 +140,7 @@
                 scrollTrigger: {
                     trigger: card,
                     start: 'top 85%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 y: 40,
@@ -159,7 +159,7 @@
                 scrollTrigger: {
                     trigger: section,
                     start: 'top 80%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 y: 50,
@@ -176,7 +176,7 @@
                 scrollTrigger: {
                     trigger: profile,
                     start: 'top 80%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 x: -50,
@@ -193,7 +193,7 @@
                 scrollTrigger: {
                     trigger: item,
                     start: 'top 85%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 y: 30,
@@ -210,7 +210,7 @@
                 scrollTrigger: {
                     trigger: step,
                     start: 'top 85%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 x: index % 2 === 0 ? -40 : 40,
@@ -227,7 +227,7 @@
                 scrollTrigger: {
                     trigger: item,
                     start: 'top 90%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 x: -30,
@@ -244,7 +244,7 @@
                 scrollTrigger: {
                     trigger: card,
                     start: 'top 85%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 y: 30,
@@ -278,7 +278,7 @@
                 scrollTrigger: {
                     trigger: footer,
                     start: 'top 95%',
-                    toggleActions: 'play none none reverse'
+                    toggleActions: 'play none none none'
                 },
                 opacity: 0,
                 y: 30,
@@ -287,7 +287,7 @@
             });
         }
 
-        // Parallax effect on hero (subtle)
+        // Parallax effect on hero (subtle - NO opacity fade)
         if (hero) {
             gsap.to(hero, {
                 scrollTrigger: {
@@ -296,8 +296,7 @@
                     end: 'bottom top',
                     scrub: true
                 },
-                y: 100,
-                opacity: 0.5,
+                y: 50,
                 ease: 'none'
             });
         }
