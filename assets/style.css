@@ -726,3 +726,137 @@ a {
     background: transparent;
     border-color: rgba(0, 0, 0, 0.15);
 }
+
+/* ========================================
+   TAG SYSTEM
+   ======================================== */
+
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    text-transform: lowercase;
+    background: rgba(25, 200, 255, 0.1);
+    border: 1px solid rgba(25, 200, 255, 0.3);
+    border-radius: 999px;
+    color: var(--electric);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.tag:hover {
+    background: rgba(25, 200, 255, 0.2);
+    border-color: var(--electric);
+    transform: translateY(-2px);
+}
+
+/* Tag page styles */
+.tags-page h1 {
+    margin-bottom: 2rem;
+}
+
+.tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+}
+
+.tags-cloud .tag {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+}
+
+.tags-cloud .tag.active {
+    background: var(--electric);
+    color: var(--void);
+    border-color: var(--electric);
+}
+
+.tag-section {
+    margin-bottom: 3rem;
+}
+
+.tag-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--electric);
+    font-size: 1.25rem;
+}
+
+.tag-section h2::before {
+    content: '#';
+    opacity: 0.5;
+}
+
+.tag-posts {
+    display: grid;
+    gap: 1rem;
+}
+
+.tag-post-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(12, 15, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.tag-post-item:hover {
+    border-color: var(--electric);
+    transform: translateX(4px);
+}
+
+.tag-post-item time {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-width: 80px;
+}
+
+.tag-post-item a {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.tag-post-item a:hover {
+    color: var(--electric);
+}
+
+/* Light theme tag styles */
+[data-theme="light"] .tag {
+    background: rgba(25, 200, 255, 0.08);
+    border-color: rgba(25, 200, 255, 0.25);
+    color: #0891b2;
+}
+
+[data-theme="light"] .tag:hover {
+    background: rgba(25, 200, 255, 0.15);
+}
+
+[data-theme="light"] .tags-cloud .tag.active {
+    background: #0891b2;
+    color: white;
+}
+
+[data-theme="light"] .tag-post-item {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .tag-section h2 {
+    color: #0891b2;
+}
