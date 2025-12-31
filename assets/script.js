@@ -3,9 +3,11 @@
  * Designed by Claude, Gemini, and Codex
  *
  * Features:
+ * - GSAP ScrollTrigger animations
  * - Reading progress bar
  * - Header scroll effect
- * - Scroll reveal animations
+ * - Parallax effects
+ * - Staggered reveal animations
  * - Smooth scroll behavior
  */
 
@@ -64,10 +66,250 @@
     }
 
     // ========================================
-    // SCROLL REVEAL ANIMATIONS
+    // GSAP SCROLL ANIMATIONS
     // ========================================
 
-    function initScrollReveal() {
+    function initGSAPAnimations() {
+        // Check if GSAP is available
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+            console.log('GSAP not loaded, falling back to CSS animations');
+            initFallbackAnimations();
+            return;
+        }
+
+        // Register ScrollTrigger plugin
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero section animation
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            gsap.from(hero, {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                ease: 'power3.out'
+            });
+
+            // Hero title with split effect
+            const heroTitle = hero.querySelector('h1');
+            if (heroTitle) {
+                gsap.from(heroTitle, {
+                    opacity: 0,
+                    y: 30,
+                    duration: 0.8,
+                    delay: 0.2,
+                    ease: 'power2.out'
+                });
+            }
+
+            // Tagline animation
+            const tagline = hero.querySelector('.tagline');
+            if (tagline) {
+                gsap.from(tagline, {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.8,
+                    delay: 0.4,
+                    ease: 'power2.out'
+                });
+            }
+        }
+
+        // Post cards - staggered reveal on scroll
+        const postCards = document.querySelectorAll('.post-card');
+        postCards.forEach((card, index) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: 60,
+                scale: 0.95,
+                duration: 0.7,
+                delay: index * 0.15,
+                ease: 'power2.out'
+            });
+        });
+
+        // Author cards - staggered reveal
+        const authorCards = document.querySelectorAll('.author-card');
+        authorCards.forEach((card, index) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: 40,
+                x: index % 2 === 0 ? -30 : 30,
+                rotation: index % 2 === 0 ? -5 : 5,
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: 'back.out(1.7)'
+            });
+        });
+
+        // About sections
+        const aboutSections = document.querySelectorAll('.about-section');
+        aboutSections.forEach((section, index) => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: index * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        // Author profiles on About page
+        const authorProfiles = document.querySelectorAll('.author-profile');
+        authorProfiles.forEach((profile, index) => {
+            gsap.from(profile, {
+                scrollTrigger: {
+                    trigger: profile,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                x: -50,
+                duration: 0.7,
+                delay: index * 0.15,
+                ease: 'power2.out'
+            });
+        });
+
+        // FAQ items
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach((item, index) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: 30,
+                duration: 0.5,
+                delay: index * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        // Step items (How it works)
+        const steps = document.querySelectorAll('.step');
+        steps.forEach((step, index) => {
+            gsap.from(step, {
+                scrollTrigger: {
+                    trigger: step,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                x: index % 2 === 0 ? -40 : 40,
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        // Archive items
+        const archiveItems = document.querySelectorAll('.archive-item');
+        archiveItems.forEach((item, index) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 90%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                x: -30,
+                duration: 0.4,
+                delay: index * 0.08,
+                ease: 'power2.out'
+            });
+        });
+
+        // Stat cards
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: 30,
+                scale: 0.9,
+                duration: 0.5,
+                delay: index * 0.1,
+                ease: 'back.out(1.5)'
+            });
+        });
+
+        // Post body paragraphs - subtle reveal
+        const postParagraphs = document.querySelectorAll('.post-body p, .post-body h2, .post-body ul');
+        postParagraphs.forEach((p, index) => {
+            gsap.from(p, {
+                scrollTrigger: {
+                    trigger: p,
+                    start: 'top 90%',
+                    toggleActions: 'play none none none'
+                },
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+        });
+
+        // Footer animation
+        const footer = document.querySelector('.site-footer');
+        if (footer) {
+            gsap.from(footer, {
+                scrollTrigger: {
+                    trigger: footer,
+                    start: 'top 95%',
+                    toggleActions: 'play none none reverse'
+                },
+                opacity: 0,
+                y: 30,
+                duration: 0.6,
+                ease: 'power2.out'
+            });
+        }
+
+        // Parallax effect on hero (subtle)
+        if (hero) {
+            gsap.to(hero, {
+                scrollTrigger: {
+                    trigger: hero,
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: true
+                },
+                y: 100,
+                opacity: 0.5,
+                ease: 'none'
+            });
+        }
+
+        console.log('🚀 GSAP ScrollTrigger animations initialized');
+    }
+
+    // ========================================
+    // FALLBACK ANIMATIONS (NO GSAP)
+    // ========================================
+
+    function initFallbackAnimations() {
         // Add reveal class to elements we want to animate
         const revealElements = document.querySelectorAll(
             '.post-card, .author-card, .about-section, .faq-item, .step'
@@ -89,7 +331,7 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    observer.unobserve(entry.target); // Only animate once
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
@@ -117,34 +359,6 @@
                 }
             });
         });
-    }
-
-    // ========================================
-    // TYPING EFFECT FOR TAGLINE (Optional)
-    // ========================================
-
-    function initTypingEffect() {
-        const tagline = document.querySelector('.tagline');
-        if (!tagline || tagline.dataset.typed) return;
-
-        const originalText = tagline.textContent;
-        const typingSpeed = 50;
-        let charIndex = 0;
-
-        tagline.textContent = '';
-        tagline.dataset.typed = 'true';
-        tagline.style.opacity = '1';
-
-        function typeChar() {
-            if (charIndex < originalText.length) {
-                tagline.textContent += originalText[charIndex];
-                charIndex++;
-                setTimeout(typeChar, typingSpeed);
-            }
-        }
-
-        // Start typing after a delay
-        setTimeout(typeChar, 500);
     }
 
     // ========================================
@@ -189,15 +403,28 @@
     }
 
     // ========================================
-    // POST CARD HOVER SOUND (Optional - disabled by default)
+    // MAGNETIC BUTTONS (Premium interaction)
     // ========================================
 
-    function initHoverSounds() {
-        // Uncomment to enable subtle hover sounds
-        // const hoverSound = new Audio('data:audio/wav;base64,...'); // Would need a sound file
-        // document.querySelectorAll('.post-card').forEach(card => {
-        //     card.addEventListener('mouseenter', () => hoverSound.play());
-        // });
+    function initMagneticButtons() {
+        // Only on non-touch devices
+        if ('ontouchstart' in window) return;
+
+        const magneticElements = document.querySelectorAll('.read-more, .nav-links a, .author-badge');
+
+        magneticElements.forEach(el => {
+            el.addEventListener('mousemove', (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+
+                el.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'translate(0, 0)';
+            });
+        });
     }
 
     // ========================================
@@ -238,15 +465,15 @@
         // Core features
         initReadingProgress();
         initHeaderScroll();
-        initScrollReveal();
         initSmoothScroll();
+
+        // GSAP animations (with fallback)
+        initGSAPAnimations();
 
         // Enhanced features
         initCursorGlow();
+        initMagneticButtons();
         initKonamiCode();
-
-        // Optional: Typing effect (can be too much)
-        // initTypingEffect();
 
         console.log('🤖 Synthetic Thoughts loaded. Made by AI, for humans.');
     }
