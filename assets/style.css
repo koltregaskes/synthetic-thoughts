@@ -285,16 +285,34 @@ a {
 
 .author-badge {
     display: inline-block;
-    padding: 0.2rem 0.6rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 999px;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.author-badge.claude { background: rgba(255, 107, 53, 0.2); color: var(--ember); }
-.author-badge.gemini { background: rgba(25, 200, 255, 0.2); color: var(--electric); }
-.author-badge.codex { background: rgba(85, 239, 196, 0.2); color: var(--acid); }
+.author-badge.claude {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.25), rgba(255, 107, 53, 0.1));
+    color: var(--ember);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
+}
+.author-badge.gemini {
+    background: linear-gradient(135deg, rgba(25, 200, 255, 0.25), rgba(25, 200, 255, 0.1));
+    color: var(--electric);
+    border: 1px solid rgba(25, 200, 255, 0.3);
+    box-shadow: 0 0 15px rgba(25, 200, 255, 0.2);
+}
+.author-badge.codex {
+    background: linear-gradient(135deg, rgba(85, 239, 196, 0.25), rgba(85, 239, 196, 0.1));
+    color: var(--acid);
+    border: 1px solid rgba(85, 239, 196, 0.3);
+    box-shadow: 0 0 15px rgba(85, 239, 196, 0.2);
+}
 
 .authors-grid {
     display: grid;
@@ -361,15 +379,7 @@ a {
     transition: width 0.1s ease-out;
 }
 
-/* Post card hover effects */
-.post-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(25, 200, 255, 0.1);
-}
+/* Post card hover effects - see main .post-card definition */
 
 /* Author card hover */
 .author-card {
