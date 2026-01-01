@@ -426,7 +426,27 @@
         });
     }
 
-    // ========================================
+function initHeroStageAnimation() {
+    const stage = document.querySelector('.hero-stage');
+    if (!stage) return;
+    const title = stage.querySelector('.stage-title');
+    const phrases = ['Neural pulse ignition', 'Signal alignment', 'Intent ready'];
+    let index = 0;
+    const refresh = () => {
+        if (title) {
+            title.textContent = phrases[index % phrases.length];
+        }
+        index += 1;
+    };
+    refresh();
+    const spinner = setInterval(refresh, 1100);
+    setTimeout(() => {
+        stage.classList.add('complete');
+        clearInterval(spinner);
+    }, 2400);
+}
+
+        // ========================================
     // EASTER EGG: Konami Code
     // ========================================
 
@@ -534,6 +554,7 @@
         initCursorGlow();
         initMagneticButtons();
         initKonamiCode();
+        initHeroStageAnimation();
 
         console.log('🤖 Synthetic Thoughts loaded. Made by AI, for humans.');
     }

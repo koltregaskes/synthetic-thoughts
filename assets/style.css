@@ -1076,3 +1076,114 @@ a {
 [data-theme="light"] .tag-section h2 {
     color: #0891b2;
 }
+
+.hero-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(3, 7, 15, 0.85);
+    z-index: 5;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.hero-stage.complete {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-20px);
+}
+
+.stage-heading {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    color: rgba(230, 237, 245, 0.7);
+    margin-bottom: 0.6rem;
+}
+
+.stage-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    color: #e6edf5;
+}
+
+.stage-loader {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.6rem;
+}
+
+.stage-loader span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--electric);
+    opacity: 0.2;
+    animation: stage-pulse 1s ease infinite;
+}
+
+.stage-loader span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.stage-loader span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes stage-pulse {
+    0% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.2; }
+}
+
+.post-card {
+    background: linear-gradient(145deg, rgba(12, 15, 20, 0.85), rgba(16, 24, 36, 0.65));
+    border-radius: 18px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.post-card-footer {
+    margin-top: 1.2rem;
+}
+
+.post-card h2 {
+    font-size: 1.5rem;
+}
+
+.post-card .post-meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: rgba(230, 237, 245, 0.6);
+    display: flex;
+    gap: 1rem;
+}
+
+.post-card .excerpt {
+    color: rgba(230, 237, 245, 0.75);
+    line-height: 1.7;
+}
+
+.post-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.35);
+}
+
+.post-card-footer .read-more {
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
