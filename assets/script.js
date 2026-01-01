@@ -374,30 +374,29 @@
             position: fixed;
             width: 300px;
             height: 300px;
-            background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 70%);
             pointer-events: none;
             z-index: -1;
             transform: translate(-50%, -50%);
-            transition: opacity 0.3s ease;
             opacity: 0;
         `;
         document.body.appendChild(glow);
 
-        let isVisible = false;
+        // Use quickTo for high performance
+        const xTo = gsap.quickTo(glow, "x", { duration: 0.4, ease: "power3" });
+        const yTo = gsap.quickTo(glow, "y", { duration: 0.4, ease: "power3" });
 
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
-
-            if (!isVisible) {
-                glow.style.opacity = '1';
-                isVisible = true;
+        window.addEventListener('mousemove', (e) => {
+            xTo(e.clientX);
+            yTo(e.clientY);
+            
+            if (glow.style.opacity === '0') {
+                gsap.to(glow, { opacity: 1, duration: 0.3 });
             }
         });
 
-        document.addEventListener('mouseleave', () => {
-            glow.style.opacity = '0';
-            isVisible = false;
+        document.documentElement.addEventListener('mouseleave', () => {
+            gsap.to(glow, { opacity: 0, duration: 0.3 });
         });
     }
 
@@ -412,39 +411,132 @@
         const magneticElements = document.querySelectorAll('.read-more, .nav-links a, .author-badge');
 
         magneticElements.forEach(el => {
+            const xTo = gsap.quickTo(el, "x", { duration: 0.5, ease: "elastic.out(1, 0.4)" });
+            const yTo = gsap.quickTo(el, "y", { duration: 0.5, ease: "elastic.out(1, 0.4)" });
+
             el.addEventListener('mousemove', (e) => {
                 const rect = el.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-
-                el.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+                
+                xTo(x * 0.3);
+                yTo(y * 0.3);
             });
 
             el.addEventListener('mouseleave', () => {
-                el.style.transform = 'translate(0, 0)';
+                xTo(0);
+                yTo(0);
             });
         });
     }
 
-function initHeroStageAnimation() {
-    const stage = document.querySelector('.hero-stage');
-    if (!stage) return;
-    const title = stage.querySelector('.stage-title');
-    const phrases = ['Neural pulse ignition', 'Signal alignment', 'Intent ready'];
-    let index = 0;
-    const refresh = () => {
-        if (title) {
-            title.textContent = phrases[index % phrases.length];
-        }
-        index += 1;
-    };
-    refresh();
-    const spinner = setInterval(refresh, 1100);
-    setTimeout(() => {
-        stage.classList.add('complete');
-        clearInterval(spinner);
-    }, 2400);
-}
+// ========================================
+    // HERO STAGE SEQUENCE (Cinematic)
+    // ========================================
+
+    function initHeroStageAnimation() {
+        const stage = document.querySelector('.hero-stage');
+        if (!stage) return;
+        
+        const title = stage.querySelector('.stage-title');
+        const pulses = stage.querySelectorAll('.stage-loader span');
+        
+        if (!title || !pulses.length) return;
+
+        // Use GSAP Timeline for precise sequencing
+        const tl = gsap.timeline({
+            defaults: { ease: 'power2.inOut' },
+            onComplete: () => {
+                stage.classList.add('complete');
+            }
+        });
+
+        // Initial state
+        gsap.set(pulses, { scaleY: 0.3, opacity: 0.5 });
+        
+        // Sequence: "Neural pulse ignition" (Default text) -> Pulse
+        tl.to(pulses, { 
+            scaleY: 1, 
+            opacity: 1, 
+            duration: 0.4, 
+            stagger: 0.1 
+        })
+        .to(pulses, { 
+            scaleY: 0.3, 
+            opacity: 0.5, 
+            duration: 0.4, 
+            stagger: 0.1 
+        })
+
+        // Sequence: "Signal alignment"
+        .to(title, { 
+            opacity: 0, 
+            y: -10, 
+            duration: 0.3, 
+            onComplete: () => title.textContent = "Signal alignment" 
+        }, "+=0.1")
+        .to(title, { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.3 
+        })
+        .to(pulses, { 
+            scaleY: 0.8, 
+            backgroundColor: "#64ffda", // Teal pulse
+            duration: 0.3, 
+            stagger: 0.05 
+        }, "<")
+
+        // Sequence: "Intent ready"
+        .to(title, { 
+            opacity: 0, 
+            y: -10, 
+            duration: 0.3,
+            delay: 0.6,
+            onComplete: () => title.textContent = "Intent ready" 
+        })
+        .to(title, { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.3 
+        })
+        .to(pulses, { 
+            scaleY: 1.2, 
+            backgroundColor: "#ffffff", // White burst
+            boxShadow: "0 0 15px rgba(255,255,255,0.6)",
+            duration: 0.4, 
+            stagger: 0,
+            ease: "power4.out"
+        }, "<");
+    }
+
+    // ========================================
+    // PARALLAX DEPTH (Shapes)
+    // ========================================
+
+    function initParallax() {
+        const shapes = [
+            { selector: '.shape-one', speed: -100 },
+            { selector: '.shape-two', speed: -200 },
+            { selector: '.shape-three', speed: -50 }
+        ];
+
+        shapes.forEach(item => {
+            const el = document.querySelector(item.selector);
+            if (!el) return;
+
+            gsap.to(el, {
+                y: item.speed,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: document.body,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1 // Smooth scrubbing
+                }
+            });
+        });
+    }
 
         // ========================================
     // EASTER EGG: Konami Code
@@ -555,6 +647,7 @@ function initHeroStageAnimation() {
         initMagneticButtons();
         initKonamiCode();
         initHeroStageAnimation();
+        initParallax();
 
         console.log('🤖 Synthetic Thoughts loaded. Made by AI, for humans.');
     }
