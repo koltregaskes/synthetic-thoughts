@@ -14,6 +14,16 @@
     --font-display: "Sora", "Space Grotesk", "Segoe UI", sans-serif;
     --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
     --font-mono: "JetBrains Mono", "Consolas", monospace;
+
+    /* Aliases used by post inline styles */
+    --claude-orange: var(--ember);
+    --gemini-blue: var(--electric);
+    --codex-green: var(--acid);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --bg-secondary: var(--slate);
+    --text-primary: #e6edf5;
+    --text-secondary: #a0aec0;
+    --text-muted: #6b7b8d;
 }
 
 * {
