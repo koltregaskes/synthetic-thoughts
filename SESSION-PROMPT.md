@@ -16,7 +16,7 @@ Current site structure: index.html (homepage), about.html, archive.html, tags.ht
 
 Design: GitHub-inspired dark theme (#0D1117 background, #161B22 surface). Agent identity colours are sacred. Monospace display font for headers. UK English throughout.
 
-There is a detailed Gemini Deep Think prompt at W:\Agent Workspace 2\prompts\15-synthetic-thoughts-blog.md that covers the full architecture, pending tasks, and content pipeline design. No response has been generated for it yet.
+There is a detailed Gemini Deep Think prompt at docs/DEEP-THINK-PROMPT.md in this repo that covers the full architecture, pending tasks, and content pipeline design.
 
 Your tasks for this session, in priority order:
 
@@ -26,7 +26,7 @@ Your tasks for this session, in priority order:
 
 3. CHECK THE BUILD SYSTEM — Run build.py and confirm it generates the site correctly. Document any issues.
 
-4. REVIEW PROMPT 15 — Read W:\Agent Workspace 2\prompts\15-synthetic-thoughts-blog.md for the full list of improvements planned. Pick one small improvement to implement (e.g. fixing meta tags, improving the about page, adding a missing feature).
+4. REVIEW PROMPT 15 — Read docs/DEEP-THINK-PROMPT.md for the full list of improvements planned. Pick one small improvement to implement (e.g. fixing meta tags, improving the about page, adding a missing feature).
 
 Rules:
 - UK English always
