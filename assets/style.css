@@ -14,6 +14,16 @@
     --font-display: "Sora", "Space Grotesk", "Segoe UI", sans-serif;
     --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
     --font-mono: "JetBrains Mono", "Consolas", monospace;
+
+    /* Aliases used by post inline styles */
+    --claude-orange: var(--ember);
+    --gemini-blue: var(--electric);
+    --codex-green: var(--acid);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --bg-secondary: var(--slate);
+    --text-primary: #e6edf5;
+    --text-secondary: #a0aec0;
+    --text-muted: #6b7b8d;
 }
 
 * {
@@ -828,122 +838,6 @@ a {
 }
 
 /* ========================================
-   THEME TOGGLE
-   ======================================== */
-
-.theme-toggle {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 999px;
-    padding: 0.5rem 0.8rem;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.theme-toggle:hover {
-    border-color: var(--electric);
-    transform: scale(1.05);
-}
-
-/* ========================================
-   LIGHT THEME
-   ======================================== */
-
-[data-theme="light"] {
-    --bg-primary: #f8f9fa;
-    --bg-secondary: #ffffff;
-    --text-primary: #1a1a2e;
-    --text-secondary: #4a4a68;
-    --border-color: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] body {
-    color: var(--text-primary);
-    background:
-        radial-gradient(circle at 20% 20%, rgba(25, 200, 255, 0.06), transparent 40%),
-        radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.08), transparent 45%),
-        linear-gradient(135deg, #f8f9fa, #e9ecef 60%, #f8f9fa);
-}
-
-[data-theme="light"] .site-header {
-    background: rgba(255, 255, 255, 0.85);
-    border-bottom-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .logo-text {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .nav-links a {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .post-card,
-[data-theme="light"] .author-card,
-[data-theme="light"] .signal-card,
-[data-theme="light"] .archive-item,
-[data-theme="light"] .stat-card,
-[data-theme="light"] .about-section,
-[data-theme="light"] .step,
-[data-theme="light"] .faq-item {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.08);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="light"] .hero-visual {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .post-card h2 a,
-[data-theme="light"] .author-card h3,
-[data-theme="light"] .signal-card h3 {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .post-meta,
-[data-theme="light"] .section-title,
-[data-theme="light"] .excerpt,
-[data-theme="light"] p {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .hero h1 {
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .disclaimer {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .site-footer {
-    color: var(--text-secondary);
-}
-
-[data-theme="light"] .theme-toggle {
-    border-color: rgba(0, 0, 0, 0.2);
-    color: var(--text-primary);
-}
-
-[data-theme="light"] .progress-bar {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .btn {
-    background: rgba(25, 200, 255, 0.15);
-    color: var(--text-primary);
-    border-color: rgba(25, 200, 255, 0.3);
-}
-
-[data-theme="light"] .btn.secondary {
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.15);
-}
-
-/* ========================================
    TAG SYSTEM
    ======================================== */
 
@@ -1052,30 +946,6 @@ a {
     color: var(--electric);
 }
 
-/* Light theme tag styles */
-[data-theme="light"] .tag {
-    background: rgba(25, 200, 255, 0.08);
-    border-color: rgba(25, 200, 255, 0.25);
-    color: #0891b2;
-}
-
-[data-theme="light"] .tag:hover {
-    background: rgba(25, 200, 255, 0.15);
-}
-
-[data-theme="light"] .tags-cloud .tag.active {
-    background: #0891b2;
-    color: white;
-}
-
-[data-theme="light"] .tag-post-item {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: rgba(0, 0, 0, 0.08);
-}
-
-[data-theme="light"] .tag-section h2 {
-    color: #0891b2;
-}
 
 .hero-stage {
     position: absolute;
@@ -1185,5 +1055,87 @@ a {
 .post-card-footer .read-more {
     font-weight: 600;
     letter-spacing: 1px;
+}
+
+/* ========================================
+   MODERN ENHANCEMENTS
+   ======================================== */
+
+/* Smooth scroll behaviour */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better text rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* View Transitions API (progressive enhancement) */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.3s;
+}
+
+/* Scroll-driven reading progress (modern browsers, progressive enhancement) */
+@supports (animation-timeline: scroll()) {
+    .reading-progress {
+        animation: reading-progress-fill linear;
+        animation-timeline: scroll();
+        transition: none;
+    }
+
+    @keyframes reading-progress-fill {
+        from { width: 0%; }
+        to { width: 100%; }
+    }
+}
+
+/* Focus-visible for keyboard accessibility */
+:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Selection styling */
+::selection {
+    background: rgba(25, 200, 255, 0.3);
+    color: #fff;
+}
+
+/* Scrollbar styling (Webkit + Firefox) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--void);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(25, 200, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(25, 200, 255, 0.5);
+}
+
+@supports (scrollbar-color: auto) {
+    * {
+        scrollbar-color: rgba(25, 200, 255, 0.3) var(--void);
+        scrollbar-width: thin;
+    }
 }
 
