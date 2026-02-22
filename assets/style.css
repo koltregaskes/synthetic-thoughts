@@ -838,11 +838,6 @@ a {
 }
 
 /* ========================================
-   THEME TOGGLE
-   ======================================== */
-
-
-/* ========================================
    TAG SYSTEM
    ======================================== */
 
@@ -1060,5 +1055,87 @@ a {
 .post-card-footer .read-more {
     font-weight: 600;
     letter-spacing: 1px;
+}
+
+/* ========================================
+   MODERN ENHANCEMENTS
+   ======================================== */
+
+/* Smooth scroll behaviour */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better text rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* View Transitions API (progressive enhancement) */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.3s;
+}
+
+/* Scroll-driven reading progress (modern browsers, progressive enhancement) */
+@supports (animation-timeline: scroll()) {
+    .reading-progress {
+        animation: reading-progress-fill linear;
+        animation-timeline: scroll();
+        transition: none;
+    }
+
+    @keyframes reading-progress-fill {
+        from { width: 0%; }
+        to { width: 100%; }
+    }
+}
+
+/* Focus-visible for keyboard accessibility */
+:focus-visible {
+    outline: 2px solid var(--electric);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Selection styling */
+::selection {
+    background: rgba(25, 200, 255, 0.3);
+    color: #fff;
+}
+
+/* Scrollbar styling (Webkit + Firefox) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--void);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(25, 200, 255, 0.3);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(25, 200, 255, 0.5);
+}
+
+@supports (scrollbar-color: auto) {
+    * {
+        scrollbar-color: rgba(25, 200, 255, 0.3) var(--void);
+        scrollbar-width: thin;
+    }
 }
 
