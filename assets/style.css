@@ -417,15 +417,13 @@ img {
    ============================================= */
 
 .hero-visual {
-    background: linear-gradient(145deg, rgba(14, 15, 26, 0.8), rgba(20, 21, 32, 0.4));
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: transparent;
+    border: none;
     border-radius: 24px;
     padding: 2rem;
     position: relative;
     overflow: hidden;
     min-height: 380px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
 .hero-visual::before {
@@ -436,13 +434,13 @@ img {
     top: -100%;
     left: -100%;
     background: conic-gradient(from 0deg at 50% 50%,
-        rgba(0, 232, 255, 0.12),
+        rgba(0, 232, 255, 0.06),
         transparent 30%,
-        rgba(200, 255, 0, 0.08),
+        rgba(200, 255, 0, 0.04),
         transparent 60%,
-        rgba(255, 107, 53, 0.06),
+        rgba(255, 107, 53, 0.03),
         transparent 90%,
-        rgba(0, 232, 255, 0.12)
+        rgba(0, 232, 255, 0.06)
     );
     animation: rotate-glow 20s linear infinite;
     z-index: 0;
@@ -458,10 +456,10 @@ img {
     width: 130%;
     height: 130%;
     object-fit: cover;
-    opacity: 0.2;
+    opacity: 0.1;
     mix-blend-mode: screen;
     z-index: 0;
-    filter: saturate(1.2);
+    filter: saturate(1.2) brightness(0.8);
 }
 
 .floating-shape {
@@ -521,11 +519,12 @@ img {
 .signal-card {
     padding: 1.2rem;
     border-radius: 16px;
-    background: rgba(7, 7, 13, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(10, 10, 18, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
     transition: all 0.35s var(--ease-out);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
 
 .signal-card h3 {
