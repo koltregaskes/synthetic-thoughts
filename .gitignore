@@ -1,2 +1,9 @@
 logs/
 __pycache__/
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+credentials.*
