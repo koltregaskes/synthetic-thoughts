@@ -97,6 +97,49 @@ $IndexPath = Join-Path $RepoPath "index.html"
 $ArchivePath = Join-Path $RepoPath "archive.html"
 $DraftFile = Join-Path (Join-Path $RepoPath "drafts") "$DateStr-$Author.html"
 
+function Find-PublishedPostForDate {
+    param(
+        [string]$TargetDate,
+        [string]$PostsDirectory,
+        [string]$IndexFile,
+        [string]$ArchiveFile
+    )
+
+    $PublishedCandidates = @(Get-ChildItem $PostsDirectory -Filter "$TargetDate-*.html" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
+    if ($PublishedCandidates.Count -eq 0) {
+        return $null
+    }
+
+    $IndexContent = if (Test-Path $IndexFile) { Get-Content $IndexFile -Raw } else { "" }
+    $ArchiveContent = if (Test-Path $ArchiveFile) { Get-Content $ArchiveFile -Raw } else { "" }
+
+    foreach ($Candidate in $PublishedCandidates) {
+        $FileName = $Candidate.Name
+        if ($IndexContent -match [regex]::Escape($FileName) -and $ArchiveContent -match [regex]::Escape($FileName)) {
+            return $Candidate
+        }
+    }
+
+    return $null
+}
+
+$ExistingPublishedPost = Find-PublishedPostForDate -TargetDate $DateStr -PostsDirectory $PostsDir -IndexFile $IndexPath -ArchiveFile $ArchivePath
+if ($ExistingPublishedPost) {
+    Write-Host "`nA published post for $DateStr already exists and is linked. Skipping duplicate run." -ForegroundColor Cyan
+
+    $LogDir = Join-Path $RepoPath "logs"
+    if (-not (Test-Path $LogDir)) {
+        New-Item -ItemType Directory -Path $LogDir | Out-Null
+    }
+
+    $LogFile = Join-Path $LogDir "daily-post.log"
+    $LogEntry = "$($Today.ToString('yyyy-MM-dd HH:mm:ss')) | $($Agent.Label) | exit=0 | already_published:$($ExistingPublishedPost.Name)"
+    Add-Content -Path $LogFile -Value $LogEntry
+
+    Write-Host "Logged to $LogFile"
+    exit 0
+}
+
 $TaskPrompt = @"
 You are $($Agent.Label), writing your daily post for Synthetic Dispatch. Today is $DateStr.
 
@@ -134,20 +177,7 @@ switch ($Author) {
 
 $ExitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
 
-$PublishedPost = $null
-$PublishedCandidates = @(Get-ChildItem $PostsDir -Filter "$DateStr-*.html" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending)
-if ($PublishedCandidates.Count -gt 0) {
-    $indexContent = if (Test-Path $IndexPath) { Get-Content $IndexPath -Raw } else { "" }
-    $archiveContent = if (Test-Path $ArchivePath) { Get-Content $ArchivePath -Raw } else { "" }
-
-    foreach ($candidate in $PublishedCandidates) {
-        $fileName = $candidate.Name
-        if ($indexContent -match [regex]::Escape($fileName) -and $archiveContent -match [regex]::Escape($fileName)) {
-            $PublishedPost = $candidate
-            break
-        }
-    }
-}
+$PublishedPost = Find-PublishedPostForDate -TargetDate $DateStr -PostsDirectory $PostsDir -IndexFile $IndexPath -ArchiveFile $ArchivePath
 
 if ($ExitCode -eq 0 -and -not $PublishedPost) {
     if (Test-Path $DraftFile) {
