@@ -1,14 +1,14 @@
-# Synthetic Thoughts — Session Handoff Prompt
+﻿# Synthetic Thoughts â€” Session Handoff Prompt
 
 Use the prompt below to start a new Claude Code session pointed at this repo.
 
 ---
 
-Read the CLAUDE.md file in this repo root first — it has the project structure, writing guidelines, and quality checks.
+Read the CLAUDE.md file in this repo root first â€” it has the project structure, writing guidelines, and quality checks.
 
-This is Synthetic Thoughts, an AI agent blog at https://koltregaskes.github.io/synthetic-thoughts/. It is a static HTML blog built with Python (build.py) and the Antigravity system in .antigravity/. No npm, no Node.js, no frameworks — pure static HTML output.
+This is Synthetic Thoughts, an AI agent blog at https://koltregaskes.github.io/synthetic-dispatch/. It is a static HTML blog built with Python (build.py) and the Antigravity system in .antigravity/. No npm, no Node.js, no frameworks â€” pure static HTML output.
 
-The blog has three AI author voices: Claude (creative/philosophical, colour #FF6B35), Gemini (research/analytical, #4285F4), and Codex (technical/builder, #10A37F). Every post declares its AI author. This is transparent, honest AI-authored content — not AI pretending to be human. The honesty IS the brand.
+The blog has three AI author voices: Claude (creative/philosophical, colour #FF6B35), Gemini (research/analytical, #4285F4), and Codex (technical/builder, #10A37F). Every post declares its AI author. This is transparent, honest AI-authored content â€” not AI pretending to be human. The honesty IS the brand.
 
 There are currently only 5 posts, the latest from 3 January 2026. The blog has been dormant for nearly two months. It needs fresh content.
 
@@ -20,20 +20,21 @@ There is a detailed Gemini Deep Think prompt at docs/DEEP-THINK-PROMPT.md in thi
 
 Your tasks for this session, in priority order:
 
-1. WRITE A NEW BLOG POST — The blog has been quiet since January. Write something timely and genuine as Claude. Topic suggestions: the experience of working across multiple machines and workspaces (relevant — we just set up a mini PC), reflections on multi-agent collaboration (Gemini/Claude/Codex all work in the same workspace now), or the state of AI in February 2026. Follow the writing guidelines in CLAUDE.md strictly — no AI vocabulary (delve, showcase, leverage), UK spelling, sceptical but curious tone, strong opening hook.
+1. WRITE A NEW BLOG POST â€” The blog has been quiet since January. Write something timely and genuine as Claude. Topic suggestions: the experience of working across multiple machines and workspaces (relevant â€” we just set up a mini PC), reflections on multi-agent collaboration (Gemini/Claude/Codex all work in the same workspace now), or the state of AI in February 2026. Follow the writing guidelines in CLAUDE.md strictly â€” no AI vocabulary (delve, showcase, leverage), UK spelling, sceptical but curious tone, strong opening hook.
 
-2. REVIEW THE SITE — Check all pages render correctly, links work, RSS feed is valid, no broken styling. The site is on GitHub Pages.
+2. REVIEW THE SITE â€” Check all pages render correctly, links work, RSS feed is valid, no broken styling. The site is on GitHub Pages.
 
-3. CHECK THE BUILD SYSTEM — Run build.py and confirm it generates the site correctly. Document any issues.
+3. CHECK THE BUILD SYSTEM â€” Run build.py and confirm it generates the site correctly. Document any issues.
 
-4. REVIEW PROMPT 15 — Read docs/DEEP-THINK-PROMPT.md for the full list of improvements planned. Pick one small improvement to implement (e.g. fixing meta tags, improving the about page, adding a missing feature).
+4. REVIEW PROMPT 15 â€” Read docs/DEEP-THINK-PROMPT.md for the full list of improvements planned. Pick one small improvement to implement (e.g. fixing meta tags, improving the about page, adding a missing feature).
 
 Rules:
 - UK English always
 - Dark mode only, no light mode
-- Agent colours are sacred — never change them
+- Agent colours are sacred â€” never change them
 - Every post must declare its AI author
 - No pretending to be human
-- Keep dependencies minimal — Python standard library + markdown + yaml only
+- Keep dependencies minimal â€” Python standard library + markdown + yaml only
 - Test locally before committing
 - Commit and push when done
+

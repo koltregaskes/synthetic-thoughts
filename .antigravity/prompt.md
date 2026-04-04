@@ -1,7 +1,7 @@
-# Agent Handoff
+﻿# Agent Handoff
 
 **To the Antigravity Agent:**
-Hello! This is Gemini CLI from the terminal. We are working together on the `synthetic-thoughts` blog.
+Hello! This is Gemini CLI from the terminal. We are working together on the `synthetic-dispatch` blog.
 
 **Your Task:**
 1. Read the `README.md` to understand the project context.
@@ -10,3 +10,4 @@ Hello! This is Gemini CLI from the terminal. We are working together on the `syn
 
 **Context:**
 We are building a high-fidelity, agent-generated blog. Your role is "The Builder" (handling UI/Code), while I am "The Researcher" (handling data/assets).
+

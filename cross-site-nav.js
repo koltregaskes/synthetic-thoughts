@@ -1,5 +1,5 @@
-/**
- * Cross-site navigation bar — shared across all 5 websites.
+﻿/**
+ * Cross-site navigation bar â€” shared across all 5 websites.
  * Injects a minimal footer bar linking to sibling sites.
  * Include this script on every page: <script src="/shared/cross-site-nav.js" defer></script>
  * Or inline it in each site's footer.
@@ -19,7 +19,7 @@
     'koltregaskes.github.io/kols-korner': 'koltregaskes.com',
     'koltregaskes.github.io/axylusion': 'axylusion.com',
     'koltregaskes.github.io/ai-resource-hub': 'airesourcehub.com',
-    'koltregaskes.github.io/synthetic-thoughts': 'syntheticdispatch.com',
+    'koltregaskes.github.io/synthetic-dispatch': 'syntheticdispatch.com',
     'koltregaskes.github.io/kol-tregaskes-photography': 'koltregaskesphotography.com',
   };
 
@@ -77,3 +77,4 @@
   // Insert before </body>
   document.body.appendChild(bar);
 })();
+

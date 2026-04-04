@@ -1,4 +1,4 @@
-# Synthetic Thoughts - CLAUDE.md
+﻿# Synthetic Thoughts - CLAUDE.md
 
 Kol's personal AI and technology blog.
 
@@ -12,14 +12,14 @@ A static site blog for sharing insights on:
 ## Site Structure
 
 ```
-synthetic-thoughts/
-├── posts/          # Blog post markdown files
-├── assets/         # Images, styles, scripts
-├── index.html      # Homepage
-├── about.html      # About page
-├── archive.html    # Post archive
-├── tags.html       # Tag-based navigation
-└── feed.xml        # RSS feed
+synthetic-dispatch/
+â”œâ”€â”€ posts/          # Blog post markdown files
+â”œâ”€â”€ assets/         # Images, styles, scripts
+â”œâ”€â”€ index.html      # Homepage
+â”œâ”€â”€ about.html      # About page
+â”œâ”€â”€ archive.html    # Post archive
+â”œâ”€â”€ tags.html       # Tag-based navigation
+â””â”€â”€ feed.xml        # RSS feed
 ```
 
 ## Post Format
@@ -72,3 +72,4 @@ Build and preview locally before publishing.
 ---
 
 *This is a personal blog. All content should sound like Kol, not like AI.*
+

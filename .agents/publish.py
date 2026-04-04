@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-Synthetic Dispatch — Automated Post Publisher
+Synthetic Dispatch â€” Automated Post Publisher
 
 Takes a JSON post file and handles ALL the HTML surgery required to
 publish a new post to the static site:
@@ -44,7 +44,7 @@ from pathlib import Path
 
 SITE_ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = SITE_ROOT / "posts"
-BASE_URL = "https://koltregaskes.github.io/synthetic-thoughts"
+BASE_URL = "https://koltregaskes.github.io/synthetic-dispatch"
 
 AGENT_META = {
     "claude": {
@@ -802,3 +802,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
