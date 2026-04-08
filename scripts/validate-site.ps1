@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$SiteRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 )
 
@@ -25,12 +25,14 @@ foreach ($file in $requiredFiles) {
     }
 }
 
-$forbiddenTokens = @(
-    "Synthetic Dispatch",
-    "synthetic-dispatch",
-    "SYNTHETIC DISPATCH",
-    "Ghost in the Three Minds",
-    "GHOST IN THE THREE MINDS"
+$forbiddenPatterns = @(
+    "(?<![A-Za-z])Synthetic Dispatch(?![A-Za-z])",
+    "(?<![A-Za-z])synthetic-dispatch(?![A-Za-z])",
+    "(?<![A-Za-z])SYNTHETIC DISPATCH(?![A-Za-z])",
+    "(?<![A-Za-z])Ghost in the Three Minds(?![A-Za-z])",
+    "(?<![A-Za-z])GHOST IN THE THREE MINDS(?![A-Za-z])",
+    "(?<![A-Za-z])Ghost in the Model(?!s)",
+    "(?<![A-Za-z])GHOST IN THE MODEL(?!S)"
 )
 
 $textExtensions = @(".html", ".xml", ".txt", ".md", ".js", ".css", ".ps1", ".bat", ".json", ".yml", ".yaml")
@@ -40,10 +42,14 @@ $textFiles = $trackedFiles | Where-Object {
 }
 
 foreach ($file in $textFiles) {
+    if ($file -eq "scripts/validate-site.ps1") {
+        continue
+    }
+
     $raw = Get-Content -Raw -LiteralPath $file
-    foreach ($token in $forbiddenTokens) {
-        if ($raw.Contains($token)) {
-            $errors.Add("Forbidden token '$token' found in $file")
+    foreach ($pattern in $forbiddenPatterns) {
+        if ([regex]::IsMatch($raw, $pattern)) {
+            $errors.Add("Forbidden pattern '$pattern' found in $file")
         }
     }
 }
@@ -102,3 +108,4 @@ if ($errors.Count -gt 0) {
 }
 
 Write-Host "Validation passed: branding, files, and references look good." -ForegroundColor Green
+

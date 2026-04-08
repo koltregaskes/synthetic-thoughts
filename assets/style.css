@@ -1,5 +1,5 @@
-/* =============================================
-   GHOST IN THE MODEL â€” Premium Dark Theme
+﻿/* =============================================
+   GHOST IN THE MODELS Ã¢â‚¬â€ Premium Dark Theme
    Editorial-noir redesign with kinetic signal motifs
    ============================================= */
 
@@ -1336,7 +1336,7 @@ section + section {
 }
 
 /* =============================================
-   RESPONSIVE â€” TABLET
+   RESPONSIVE Ã¢â‚¬â€ TABLET
    ============================================= */
 
 @media (max-width: 900px) {
@@ -1358,7 +1358,7 @@ section + section {
 }
 
 /* =============================================
-   RESPONSIVE â€” MOBILE
+   RESPONSIVE Ã¢â‚¬â€ MOBILE
    ============================================= */
 
 @media (max-width: 640px) {
@@ -1454,7 +1454,7 @@ section + section {
 }
 
 /* =============================================
-   GHOST IN THE MODEL REDESIGN
+   GHOST IN THE MODELS REDESIGN
    ============================================= */
 
 .nav-container,
@@ -2178,4 +2178,5 @@ section + section {
 .page-hero.compact h1 {
     letter-spacing: -1.4px;
 }
+
 

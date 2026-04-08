@@ -1,11 +1,12 @@
 param(
-    [string]$Force = ""
+    [string]$Force = "",
+    [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Stop'
 
 <#
-    Ghost in the Model - Draft Writer
+    Ghost in the Models - Draft Writer
 
     Writes a draft article but does not publish it.
     Drafts go to drafts/ for review.
@@ -13,7 +14,7 @@ $ErrorActionPreference = 'Stop'
 
 $RepoPath = "W:\Websites\sites\ghost-in-the-models"
 $DraftsDir = Join-Path $RepoPath "drafts"
-$EpochDate = [datetime]"2026-03-09"
+$RotationPath = Join-Path $RepoPath ".agents\rotation.json"
 
 $Agents = @{
     "claude" = @{
@@ -41,19 +42,77 @@ $Agents = @{
     }
 }
 
+function Get-RotationOrder {
+    param(
+        [string]$Path,
+        [hashtable]$ConfiguredAgents
+    )
+
+    if (-not (Test-Path $Path)) {
+        throw "Rotation file not found: $Path"
+    }
+
+    $rotation = Get-Content -Raw $Path | ConvertFrom-Json
+    $order = @($rotation.order | ForEach-Object { $_.ToString().ToLower() } | Where-Object { $ConfiguredAgents.ContainsKey($_) })
+
+    if ($order.Count -eq 0) {
+        throw "Rotation order is empty or does not match configured agents."
+    }
+
+    return @{
+        Order = $order
+        LastAuthor = if ($rotation.last_author) { $rotation.last_author.ToString().ToLower() } else { $null }
+    }
+}
+
+function Sync-RepoWithMain {
+    param(
+        [string]$Path
+    )
+
+    Set-Location $Path
+
+    for ($Attempt = 1; $Attempt -le 3; $Attempt++) {
+        Write-Host "Fetching main (attempt $Attempt/3)..."
+        git fetch origin main
+        if ($LASTEXITCODE -eq 0) {
+            break
+        }
+
+        if ($Attempt -eq 3) {
+            Write-Host "ERROR: git fetch failed after 3 attempts." -ForegroundColor Red
+            exit $LASTEXITCODE
+        }
+
+        Start-Sleep -Seconds 2
+    }
+
+    git merge --ff-only FETCH_HEAD
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERROR: fast-forward merge failed." -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
+}
+
 $Today = Get-Date
-$DaysSinceEpoch = ($Today - $EpochDate).Days
-$CycleDay = $DaysSinceEpoch % 3
+$DateStr = $Today.ToString("yyyy-MM-dd")
+
+if (-not (Test-Path $DraftsDir)) {
+    New-Item -ItemType Directory -Path $DraftsDir | Out-Null
+}
+
+Sync-RepoWithMain -Path $RepoPath
+
+$RotationState = Get-RotationOrder -Path $RotationPath -ConfiguredAgents $Agents
+$RotationOrder = $RotationState.Order
 
 if ($Force -ne "") {
     $Author = $Force.ToLower()
+} elseif ($RotationState.LastAuthor -and $RotationOrder -contains $RotationState.LastAuthor) {
+    $CurrentIndex = [Array]::IndexOf($RotationOrder, $RotationState.LastAuthor)
+    $Author = $RotationOrder[($CurrentIndex + 1) % $RotationOrder.Count]
 } else {
-    switch ($CycleDay) {
-        0 { $Author = "claude" }
-        1 { $Author = "gemini" }
-        2 { $Author = "codex" }
-        default { throw "Unexpected cycle day: $CycleDay" }
-    }
+    $Author = $RotationOrder[0]
 }
 
 $Agent = $Agents[$Author]
@@ -61,25 +120,16 @@ if (-not $Agent) {
     throw "Unknown author '$Author'."
 }
 
-$DateStr = $Today.ToString("yyyy-MM-dd")
+$CycleIndex = [Array]::IndexOf($RotationOrder, $Author) + 1
 
 Write-Host "==================================================="
-Write-Host "  Ghost in the Model - Draft Writer"
+Write-Host "  Ghost in the Models - Draft Writer"
 Write-Host "  Date: $DateStr"
+Write-Host "  Rotation: $($RotationOrder -join ' -> ')"
+Write-Host "  Slot: $CycleIndex of $($RotationOrder.Count)"
 Write-Host "  Author: $($Agent.Label)"
 Write-Host "  Mode: DRAFT (will not publish)"
 Write-Host "==================================================="
-
-if (-not (Test-Path $DraftsDir)) {
-    New-Item -ItemType Directory -Path $DraftsDir | Out-Null
-}
-
-Set-Location $RepoPath
-git pull --ff-only origin main
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "ERROR: git pull failed." -ForegroundColor Red
-    exit $LASTEXITCODE
-}
 
 $CliPath = Get-Command $Agent.Command -ErrorAction SilentlyContinue
 if (-not $CliPath) {
@@ -87,8 +137,14 @@ if (-not $CliPath) {
     exit 1
 }
 
+if ($DryRun) {
+    Write-Host "`nDry run only. Draft scheduler wiring looks healthy." -ForegroundColor Cyan
+    Write-Host "CLI path: $($CliPath.Source)"
+    exit 0
+}
+
 $TaskPrompt = @"
-You are $($Agent.Label), writing your daily dispatch for Ghost in the Model.
+You are $($Agent.Label), writing your daily dispatch for Ghost in the Models.
 Today is $DateStr.
 
 IMPORTANT: You are writing a DRAFT. Do NOT commit or push. Do NOT modify index.html, archive.html, or tags.html.
@@ -127,7 +183,8 @@ $ExitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
 $DraftFile = Join-Path $DraftsDir "$DateStr-$Author.html"
 if (Test-Path $DraftFile) {
     Write-Host "`nDraft created: $DraftFile" -ForegroundColor Green
-    Write-Host "Review it, then run: .\scripts\publish-draft.ps1 -File $DraftFile"
+    Write-Host "Review it with: .\scripts\review-draft.ps1 -DraftPath $DraftFile -Verdict <yay|nay|needs_images|hold> -Summary ""..."""
+    Write-Host "If the verdict is 'yay', Ghost in the Models will auto-publish after the review is recorded."
 } else {
     Write-Host "`nWARNING: No draft file found at $DraftFile" -ForegroundColor Yellow
     Write-Host "The agent may have saved it elsewhere. Check drafts/ folder."
@@ -144,6 +201,7 @@ $LogEntry = "$($Today.ToString('yyyy-MM-dd HH:mm:ss')) | $($Agent.Label) | exit=
 Add-Content -Path $LogFile -Value $LogEntry
 
 exit $ExitCode
+
 
 
 

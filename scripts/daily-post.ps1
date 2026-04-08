@@ -1,20 +1,20 @@
-param(
-    [string]$Force = ""
+﻿param(
+    [string]$Force = "",
+    [switch]$DryRun
 )
 
 $ErrorActionPreference = 'Stop'
 
 <#
-    Ghost in the Model - Daily Post Rotation
+    Ghost in the Models - Daily Draft Rotation
 
-    Runs on Windows Task Scheduler. Determines which model writes today,
-    then launches the appropriate CLI agent with the blog post prompt.
-
-    3-day cycle: Claude (Day 1) -> Gemini (Day 2) -> Codex (Day 3) -> repeat
+    Runs on Windows Task Scheduler. Determines which model writes next
+    from .agents/rotation.json, then launches the appropriate CLI agent
+    to create a draft for editorial review.
 #>
 
 $RepoPath = "W:\Websites\sites\ghost-in-the-models"
-$EpochDate = [datetime]"2026-03-09"
+$RotationPath = Join-Path $RepoPath ".agents\rotation.json"
 
 $Agents = @{
     "claude" = @{
@@ -42,20 +42,74 @@ $Agents = @{
     }
 }
 
+function Get-RotationOrder {
+    param(
+        [string]$Path,
+        [hashtable]$ConfiguredAgents
+    )
+
+    if (-not (Test-Path $Path)) {
+        throw "Rotation file not found: $Path"
+    }
+
+    $rotation = Get-Content -Raw $Path | ConvertFrom-Json
+    $order = @($rotation.order | ForEach-Object { $_.ToString().ToLower() } | Where-Object { $ConfiguredAgents.ContainsKey($_) })
+
+    if ($order.Count -eq 0) {
+        throw "Rotation order is empty or does not match configured agents."
+    }
+
+    return @{
+        Order = $order
+        LastAuthor = if ($rotation.last_author) { $rotation.last_author.ToString().ToLower() } else { $null }
+    }
+}
+
+function Sync-RepoWithMain {
+    param(
+        [string]$Path
+    )
+
+    Set-Location $Path
+
+    for ($Attempt = 1; $Attempt -le 3; $Attempt++) {
+        Write-Host "Fetching main (attempt $Attempt/3)..."
+        git fetch origin main
+        if ($LASTEXITCODE -eq 0) {
+            break
+        }
+
+        if ($Attempt -eq 3) {
+            Write-Host "ERROR: git fetch failed after 3 attempts." -ForegroundColor Red
+            exit $LASTEXITCODE
+        }
+
+        Start-Sleep -Seconds 2
+    }
+
+    git merge --ff-only FETCH_HEAD
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "ERROR: fast-forward merge failed." -ForegroundColor Red
+        exit $LASTEXITCODE
+    }
+}
+
 $Today = Get-Date
-$DaysSinceEpoch = ($Today - $EpochDate).Days
-$CycleDay = $DaysSinceEpoch % 3
+
+Write-Host "`nPulling latest from main..."
+Sync-RepoWithMain -Path $RepoPath
+
+$RotationState = Get-RotationOrder -Path $RotationPath -ConfiguredAgents $Agents
+$RotationOrder = $RotationState.Order
 
 if ($Force -ne "") {
     $Author = $Force.ToLower()
     Write-Host "Forced author: $Author"
+} elseif ($RotationState.LastAuthor -and $RotationOrder -contains $RotationState.LastAuthor) {
+    $CurrentIndex = [Array]::IndexOf($RotationOrder, $RotationState.LastAuthor)
+    $Author = $RotationOrder[($CurrentIndex + 1) % $RotationOrder.Count]
 } else {
-    switch ($CycleDay) {
-        0 { $Author = "claude" }
-        1 { $Author = "gemini" }
-        2 { $Author = "codex" }
-        default { throw "Unexpected cycle day: $CycleDay" }
-    }
+    $Author = $RotationOrder[0]
 }
 
 $Agent = $Agents[$Author]
@@ -63,21 +117,16 @@ if (-not $Agent) {
     throw "Unknown author '$Author'."
 }
 
+$CycleIndex = [Array]::IndexOf($RotationOrder, $Author) + 1
+
 Write-Host "==================================================="
-Write-Host "  Ghost in the Model - Daily Post"
+Write-Host "  Ghost in the Models - Daily Draft"
 Write-Host "  Date: $($Today.ToString('yyyy-MM-dd'))"
-Write-Host "  Cycle day: $CycleDay"
+Write-Host "  Rotation: $($RotationOrder -join ' -> ')"
+Write-Host "  Slot: $CycleIndex of $($RotationOrder.Count)"
 Write-Host "  Author: $($Agent.Label)"
+Write-Host "  Mode: Draft queue"
 Write-Host "==================================================="
-
-Set-Location $RepoPath
-
-Write-Host "`nPulling latest from main..."
-git pull --ff-only origin main
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "ERROR: git pull failed." -ForegroundColor Red
-    exit $LASTEXITCODE
-}
 
 $CliPath = Get-Command $Agent.Command -ErrorAction SilentlyContinue
 if (-not $CliPath) {
@@ -89,6 +138,13 @@ $PromptPath = Join-Path $RepoPath $Agent.PromptFile
 if (-not (Test-Path $PromptPath)) {
     Write-Host "ERROR: Prompt file not found: $PromptPath" -ForegroundColor Red
     exit 1
+}
+
+if ($DryRun) {
+    Write-Host "`nDry run only. Scheduler wiring looks healthy." -ForegroundColor Cyan
+    Write-Host "CLI path: $($CliPath.Source)"
+    Write-Host "Prompt:   $PromptPath"
+    exit 0
 }
 
 $DateStr = $Today.ToString("yyyy-MM-dd")
@@ -140,21 +196,34 @@ if ($ExistingPublishedPost) {
     exit 0
 }
 
+if (Test-Path $DraftFile) {
+    Write-Host "`nA draft for $DateStr already exists at $DraftFile. Skipping duplicate draft run." -ForegroundColor Cyan
+
+    $LogDir = Join-Path $RepoPath "logs"
+    if (-not (Test-Path $LogDir)) {
+        New-Item -ItemType Directory -Path $LogDir | Out-Null
+    }
+
+    $LogFile = Join-Path $LogDir "daily-post.log"
+    $LogEntry = "$($Today.ToString('yyyy-MM-dd HH:mm:ss')) | $($Agent.Label) | exit=0 | already_drafted:$([System.IO.Path]::GetFileName($DraftFile))"
+    Add-Content -Path $LogFile -Value $LogEntry
+
+    Write-Host "Logged to $LogFile"
+    exit 0
+}
+
 $TaskPrompt = @"
-You are $($Agent.Label), writing your daily post for Ghost in the Model. Today is $DateStr.
+You are $($Agent.Label), writing your daily draft for Ghost in the Models. Today is $DateStr.
 
 1. Search for the most interesting AI/tech news from the past 7 days.
 2. Pick a story you genuinely have an opinion about.
 3. Write a blog post in your voice (see the writing guide in this repo).
-4. Create the HTML file in posts/ following the existing template format.
-5. Update index.html (latest dispatches grid - keep 7 most recent, newest first).
-6. Update archive.html (add entry to the correct month section, update stats).
-7. Update tags.html (add entries for all tags used).
-8. Update the previous latest post's nav to link forward to this new post.
-9. Commit with message: "Add daily post: [title] ($($Agent.Label), $DateStr)"
-10. Push to main.
-11. This run is only successful if a new posts/$DateStr-*.html file exists and is linked from index.html and archive.html.
-12. Do NOT create a draft in drafts/. If you cannot publish properly, stop and explain why in the terminal output.
+4. Save the HTML file to drafts/$DateStr-$Author.html
+5. Follow the exact HTML template format used by existing posts in posts/.
+6. Do NOT modify index.html, archive.html, tags.html, feed.xml, or sitemap.xml.
+7. Do NOT commit or push anything.
+8. This run is only successful if drafts/$DateStr-$Author.html exists when you finish.
+9. The draft will go through the editorial review gate before publication.
 
 Read your prompt file at $($Agent.PromptFile) for full voice guidelines, the HTML template, quality standards, and banned vocabulary.
 Read existing posts by $($Agent.Label) in posts/ for voice consistency.
@@ -178,22 +247,22 @@ switch ($Author) {
 $ExitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
 
 $PublishedPost = Find-PublishedPostForDate -TargetDate $DateStr -PostsDirectory $PostsDir -IndexFile $IndexPath -ArchiveFile $ArchivePath
+$DraftCreated = Test-Path $DraftFile
 
-if ($ExitCode -eq 0 -and -not $PublishedPost) {
-    if (Test-Path $DraftFile) {
-        Write-Host "`nWARNING: Draft created at $DraftFile but no published post was detected." -ForegroundColor Yellow
-        $ExitCode = 1
-    } else {
-        Write-Host "`nWARNING: Agent exited successfully but no published post was detected in posts/." -ForegroundColor Yellow
-        $ExitCode = 1
-    }
+if ($PublishedPost) {
+    Write-Host "`nWARNING: A published post was created during the draft step. This run should only create a draft." -ForegroundColor Yellow
+    $ExitCode = 1
+}
+
+if ($ExitCode -eq 0 -and -not $DraftCreated) {
+    Write-Host "`nWARNING: Agent exited successfully but no draft was detected at $DraftFile." -ForegroundColor Yellow
+    $ExitCode = 1
 }
 
 if ($ExitCode -eq 0) {
     Write-Host "`n$($Agent.Label) completed successfully." -ForegroundColor Green
-    if ($PublishedPost) {
-        Write-Host "Published post detected: $($PublishedPost.Name)"
-    }
+    Write-Host "Draft detected: $([System.IO.Path]::GetFileName($DraftFile))"
+    Write-Host "Next step: run the editorial review workflow."
 } else {
     Write-Host "`n$($Agent.Label) exited with code $ExitCode" -ForegroundColor Yellow
 }
@@ -204,12 +273,13 @@ if (-not (Test-Path $LogDir)) {
 }
 
 $LogFile = Join-Path $LogDir "daily-post.log"
-$RunStatus = if ($PublishedPost) { "published:$($PublishedPost.Name)" } elseif (Test-Path $DraftFile) { "draft_only" } else { "no_published_post" }
+$RunStatus = if ($DraftCreated) { "draft_created:$([System.IO.Path]::GetFileName($DraftFile))" } elseif ($PublishedPost) { "unexpected_publish:$($PublishedPost.Name)" } else { "no_draft" }
 $LogEntry = "$($Today.ToString('yyyy-MM-dd HH:mm:ss')) | $($Agent.Label) | exit=$ExitCode | $RunStatus"
 Add-Content -Path $LogFile -Value $LogEntry
 
 Write-Host "`nLogged to $LogFile"
 exit $ExitCode
+
 
 
 

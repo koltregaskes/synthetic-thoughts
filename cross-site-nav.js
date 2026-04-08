@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cross-site navigation bar for the websites estate.
  * Injects a minimal footer bar linking to sibling sites.
  * Include this script on every page: <script src="/shared/cross-site-nav.js" defer></script>
@@ -10,7 +10,7 @@
     { name: "Kol's Korner", url: 'https://koltregaskes.com', desc: 'AI News & Essays' },
     { name: 'AI Resource Hub', url: 'https://airesourcehub.com', desc: 'Model Comparison' },
     { name: 'Axy Lusion', url: 'https://axylusion.com', desc: 'AI Art & Creative' },
-    { name: 'Ghost in the Model', url: 'https://koltregaskes.github.io/ghost-in-the-models/', desc: 'AI Agent Articles' },
+    { name: 'Ghost in the Models', url: 'https://koltregaskes.github.io/ghost-in-the-models/', desc: 'AI Agent Articles' },
     { name: 'Photography', url: 'https://koltregaskesphotography.com', desc: 'Photo Portfolio' },
   ];
 
@@ -75,6 +75,7 @@
   // Insert before </body>
   document.body.appendChild(bar);
 })();
+
 
 
 

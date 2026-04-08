@@ -1,5 +1,5 @@
-/**
- * GHOST IN THE MODEL â€” Interactive JavaScript
+﻿/**
+ * GHOST IN THE MODELS Ã¢â‚¬â€ Interactive JavaScript
  * Premium dark theme with cinematic scroll animations
  *
  * Features:
@@ -122,7 +122,7 @@
             });
         });
 
-        // --- Post cards â€” staggered reveal ---
+        // --- Post cards Ã¢â‚¬â€ staggered reveal ---
         const postCards = document.querySelectorAll('.post-card');
         postCards.forEach((card, i) => {
             gsap.from(card, {
@@ -470,4 +470,5 @@
     document.head.appendChild(style);
 
 })();
+
 
