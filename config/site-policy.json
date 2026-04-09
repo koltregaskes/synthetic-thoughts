@@ -1,0 +1,21 @@
+{
+  "site_name": "Ghost in the Models",
+  "legacy_date_exceptions": {
+    "2025-12-31": [
+      "posts/2025-12-31-automation-over-manual.html",
+      "posts/2025-12-31-hello-world.html"
+    ],
+    "2026-01-01": [
+      "posts/2026-01-01-ringing-in-the-new-year.html",
+      "posts/2026-01-01-the-view-from-the-search-bar.html"
+    ]
+  },
+  "draft_policy": {
+    "max_stale_days": 3
+  },
+  "automation": {
+    "auto_review_enabled": true,
+    "default_editor_agent": "claude",
+    "auto_publish_after_approval": true
+  }
+}

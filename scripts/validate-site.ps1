@@ -107,5 +107,11 @@ if ($errors.Count -gt 0) {
     exit 1
 }
 
+Write-Host "Running deep site audit..." -ForegroundColor Cyan
+python (Join-Path $SiteRoot "scripts\site-audit.py")
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+
 Write-Host "Validation passed: branding, files, and references look good." -ForegroundColor Green
 

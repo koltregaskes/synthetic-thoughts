@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GHOST IN THE MODELS - Interactive JavaScript
  * Native motion system with no third-party runtime dependencies.
  */

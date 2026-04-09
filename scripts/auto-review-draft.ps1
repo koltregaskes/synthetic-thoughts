@@ -10,7 +10,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $RepoPath = 'W:\Websites\sites\ghost-in-the-models'
-$PolicyPath = Join-Path $RepoPath '.agents\site-policy.json'
+$PolicyPath = Join-Path $RepoPath 'config\site-policy.json'
 $ReviewScript = Join-Path $RepoPath 'scripts\review-draft.ps1'
 $PromptPath = Join-Path $RepoPath 'docs\prompt-website-manager.md'
 $LogDir = Join-Path $RepoPath 'logs\editorial'

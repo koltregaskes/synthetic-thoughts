@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 
 $RepoPath = "W:\Websites\sites\ghost-in-the-models"
 $RotationPath = Join-Path $RepoPath ".agents\rotation.json"
-$PolicyPath = Join-Path $RepoPath ".agents\site-policy.json"
+$PolicyPath = Join-Path $RepoPath "config\site-policy.json"
 $HubBuildScript = "W:\Websites\shared\website-tools\pipelines\articles\scripts\build-editorial-hub.py"
 $AutoReviewScript = Join-Path $RepoPath "scripts\auto-review-draft.ps1"
 $RunLogsDir = Join-Path $RepoPath "logs\agent-runs"

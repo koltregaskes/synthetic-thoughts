@@ -211,10 +211,6 @@ Read your previous posts in posts/ for voice consistency.
 
 Write-Host "`nLaunching $($Agent.Label) to write draft..."
 
-switch ($Author) {
-    default {}
-}
-
 $Invocation = Invoke-AgentTask -AuthorKey $Author -AgentConfig $Agent -Prompt $TaskPrompt -LogsDirectory $RunLogsDir
 $ExitCode = $Invocation.ExitCode
 $TranscriptPath = $Invocation.TranscriptPath

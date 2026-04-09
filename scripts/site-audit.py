@@ -14,7 +14,7 @@ from typing import Iterable
 SITE_ROOT = Path(__file__).resolve().parent.parent
 POSTS_DIR = SITE_ROOT / "posts"
 DRAFTS_DIR = SITE_ROOT / "drafts"
-POLICY_PATH = SITE_ROOT / ".agents" / "site-policy.json"
+POLICY_PATH = SITE_ROOT / "config" / "site-policy.json"
 TEXT_SUFFIXES = {
     ".html",
     ".xml",
@@ -28,6 +28,9 @@ TEXT_SUFFIXES = {
     ".yml",
     ".yaml",
     ".py",
+}
+MOJIBAKE_IGNORE_FILES = {
+    "scripts/site-audit.py",
 }
 MOJIBAKE_PATTERNS = (
     "Ã",
@@ -198,6 +201,8 @@ def audit_text_integrity(messages: list[AuditMessage]) -> None:
     for path in tracked_text_files():
         raw = path.read_bytes()
         rel = normalize_rel(path)
+        if rel in MOJIBAKE_IGNORE_FILES:
+            continue
         if raw.startswith(b"\xef\xbb\xbf"):
             messages.append(
                 AuditMessage("error", "bom_detected", f"UTF-8 BOM present in {rel}")

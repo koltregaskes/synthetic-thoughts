@@ -75,6 +75,21 @@ function Write-Utf8NoBom {
     [System.IO.File]::WriteAllText($Path, $Content, $Utf8NoBom)
 }
 
+function Assert-CleanTrackedWorktree {
+    param([string]$Path)
+
+    Set-Location $Path
+    $status = @(git status --porcelain --untracked-files=no)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to inspect git worktree state.'
+    }
+
+    if ($status.Count -gt 0) {
+        $details = ($status | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+        throw "Tracked git changes are already present. Refusing to auto-publish on a dirty worktree.`n$details"
+    }
+}
+
 function Get-NormalizedDraftInfo {
     param(
         [string]$InputPath,
@@ -165,11 +180,58 @@ function Refresh-EditorialHub {
     }
 }
 
+function Get-PostTitle {
+    param([string]$Path)
+
+    $raw = Get-Content -Raw -LiteralPath $Path
+    $match = [regex]::Match($raw, '<h1[^>]*>(.*?)</h1>', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase -bor [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    if ($match.Success) {
+        return [regex]::Replace($match.Groups[1].Value, '<[^>]+>', '').Trim()
+    }
+
+    return [System.IO.Path]::GetFileNameWithoutExtension($Path)
+}
+
+function Commit-And-PushPublication {
+    param(
+        [string]$Path,
+        [string]$Message
+    )
+
+    Set-Location $Path
+
+    git add -A
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Failed to stage publication changes.'
+    }
+
+    $staged = @(git diff --cached --name-only)
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Failed to inspect staged publication changes.'
+    }
+
+    if ($staged.Count -eq 0) {
+        Write-Host 'No tracked publication changes were staged.' -ForegroundColor Yellow
+        return
+    }
+
+    git commit -m $Message
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Failed to commit publication changes.'
+    }
+
+    git push origin main
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Failed to push publication changes to origin/main.'
+    }
+}
+
 $options = Get-InvocationOptions -Arguments $args
 $DraftPath = $options.DraftPath
 $Force = $options.Force
 
 Set-Location $RepoPath
+Assert-CleanTrackedWorktree -Path $RepoPath
 
 if (-not (Test-Path $ManifestPath)) {
     throw "Editorial site manifest not found: $ManifestPath"
@@ -234,5 +296,9 @@ if (Test-Path $draft.FullPath) {
 
 Refresh-EditorialHub -ScriptPath $HubBuildScript
 
+$postTitle = Get-PostTitle -Path $destinationPath
+$commitMessage = "Publish post: $postTitle"
+Commit-And-PushPublication -Path $RepoPath -Message $commitMessage
+
 Write-Host "`nPublished successfully!" -ForegroundColor Green
-Write-Host 'Review gate passed and hub state refreshed.'
+Write-Host 'Review gate passed, site updated, and changes pushed to origin/main.'

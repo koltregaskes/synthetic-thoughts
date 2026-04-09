@@ -18,7 +18,7 @@ CSP_META = (
     'content="default-src \'self\'; img-src \'self\' data: https:; media-src \'self\' https:; '
     'style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; '
     'font-src https://fonts.gstatic.com data:; script-src \'self\'; connect-src \'self\'; '
-    'base-uri \'self\'; form-action \'self\'; frame-ancestors \'none\'">'
+    'base-uri \'self\'; form-action \'self\'">'
 )
 STANDARD_ICON = (
     '<link rel="icon" href="data:image/svg+xml,'
@@ -32,6 +32,7 @@ GSAP_TAG_RE = re.compile(
     re.IGNORECASE,
 )
 ICON_RE = re.compile(r'<link rel="icon" href="data:image/svg\+xml,[^"]+">', re.IGNORECASE)
+CSP_RE = re.compile(r'<meta http-equiv="Content-Security-Policy" content="[^"]+">', re.IGNORECASE)
 TIME_TAG_RE = re.compile(r'(<time[^>]+datetime=")(\d{4}-\d{2}-\d{2})(">(.*?)</time>)', re.IGNORECASE | re.DOTALL)
 
 
@@ -61,7 +62,10 @@ def harden_file(path: Path) -> bool:
                 REFERRER_META,
                 after='<meta name="viewport" content="width=device-width, initial-scale=1.0">',
             )
-            head = ensure_meta_tag(head, CSP_META, after=REFERRER_META)
+            if CSP_RE.search(head):
+                head = CSP_RE.sub(CSP_META, head, count=1)
+            else:
+                head = ensure_meta_tag(head, CSP_META, after=REFERRER_META)
         if ICON_RE.search(head):
             head = ICON_RE.sub(STANDARD_ICON, head, count=1)
         updated = head + updated[head_end:]
