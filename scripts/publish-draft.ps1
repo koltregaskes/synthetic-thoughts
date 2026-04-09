@@ -240,6 +240,8 @@ if (-not (Test-Path $ManifestPath)) {
 $manifest = Get-Content -Raw $ManifestPath | ConvertFrom-Json
 $draft = Get-NormalizedDraftInfo -InputPath $DraftPath -Root $RepoPath
 $destinationPath = Join-Path (Join-Path $RepoPath 'posts') $draft.FileName
+$stagingDir = Join-Path $RepoPath 'logs\publish-staging'
+$stagedDraftPath = Join-Path $stagingDir $draft.FileName
 $draftReview = Get-ReviewRecordInfo -RelativePath $draft.RelativePath -Manifest $manifest -CurrentSiteId $SiteId
 $publishedRelativePath = "posts/$($draft.FileName)"
 $publishedReview = Get-ReviewRecordInfo -RelativePath $publishedRelativePath -Manifest $manifest -CurrentSiteId $SiteId
@@ -259,18 +261,35 @@ if (-not $Force) {
 }
 
 Copy-Item $draft.FullPath $destinationPath -Force
+if (-not (Test-Path $stagingDir)) {
+    New-Item -ItemType Directory -Path $stagingDir -Force | Out-Null
+}
+if (Test-Path $stagedDraftPath) {
+    Remove-Item $stagedDraftPath -Force
+}
+Move-Item $draft.FullPath $stagedDraftPath -Force
 Write-Host "`nDraft copied to posts/" -ForegroundColor Green
 
-Write-Host "`nRebuilding derived site files..."
-python "$RepoPath\scripts\rebuild-derived.py"
-if ($LASTEXITCODE -ne 0) {
-    throw 'Derived site rebuild failed.'
-}
+try {
+    Write-Host "`nRebuilding derived site files..."
+    python "$RepoPath\scripts\rebuild-derived.py"
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Derived site rebuild failed.'
+    }
 
-Write-Host 'Running site validation...'
-powershell -NoProfile -ExecutionPolicy Bypass -File "$RepoPath\scripts\validate-site.ps1"
-if ($LASTEXITCODE -ne 0) {
-    throw 'Site validation failed.'
+    Write-Host 'Running site validation...'
+    powershell -NoProfile -ExecutionPolicy Bypass -File "$RepoPath\scripts\validate-site.ps1"
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Site validation failed.'
+    }
+} catch {
+    if (Test-Path $destinationPath) {
+        Remove-Item $destinationPath -Force
+    }
+    if (Test-Path $stagedDraftPath -and -not (Test-Path $draft.FullPath)) {
+        Move-Item $stagedDraftPath $draft.FullPath -Force
+    }
+    throw
 }
 
 if ($review) {
@@ -289,8 +308,8 @@ if ($review) {
     }
 }
 
-if (Test-Path $draft.FullPath) {
-    Remove-Item $draft.FullPath -Force
+if (Test-Path $stagedDraftPath) {
+    Remove-Item $stagedDraftPath -Force
     Write-Host 'Draft cleaned up.'
 }
 
