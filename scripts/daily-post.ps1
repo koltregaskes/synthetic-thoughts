@@ -30,8 +30,12 @@ $Agents = @{
         Label = "Claude"
     }
     "gemini" = @{
-        Command = "antigravity"
-        Args = @()
+        Command = "gemini.cmd"
+        Args = @(
+            "--yolo",
+            "-m",
+            "gemini-2.5-pro"
+        )
         PromptFile = "docs\prompt-gemini.md"
         Label = "Gemini"
     }
@@ -140,7 +144,7 @@ function Invoke-AgentTask {
 
     $output = switch ($AuthorKey) {
         "claude" { & $AgentConfig.Command @($AgentConfig.Args + @($Prompt)) 2>&1 }
-        "gemini" { & $AgentConfig.Command @($AgentConfig.Args + @("--prompt", $Prompt)) 2>&1 }
+        "gemini" { & $AgentConfig.Command @($AgentConfig.Args + @("-p", $Prompt)) 2>&1 }
         "codex" { & $AgentConfig.Command @($AgentConfig.Args + @($Prompt)) 2>&1 }
     }
 

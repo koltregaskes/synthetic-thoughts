@@ -22,8 +22,12 @@ $Agents = @{
         Label = 'Claude'
     }
     'gemini' = @{
-        Command = 'antigravity'
-        Args = @()
+        Command = 'gemini.cmd'
+        Args = @(
+            '--yolo',
+            '-m',
+            'gemini-2.5-pro'
+        )
         Label = 'Gemini'
     }
     'codex' = @{
@@ -139,7 +143,7 @@ function Invoke-EditorAgent {
 
     $output = switch ($AgentKey) {
         'claude' { & $agent.Command @($agent.Args + @($Prompt)) 2>&1 }
-        'gemini' { & $agent.Command @($agent.Args + @('--prompt', $Prompt)) 2>&1 }
+        'gemini' { & $agent.Command @($agent.Args + @('-p', $Prompt)) 2>&1 }
         'codex' { & $agent.Command @($agent.Args + @($Prompt)) 2>&1 }
     }
 
