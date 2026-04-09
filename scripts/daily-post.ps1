@@ -142,10 +142,16 @@ function Invoke-AgentTask {
     $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
     $transcriptPath = Join-Path $LogsDirectory "$timestamp-$AuthorKey-draft.txt"
 
-    $output = switch ($AuthorKey) {
-        "claude" { & $AgentConfig.Command @($AgentConfig.Args + @($Prompt)) 2>&1 }
-        "gemini" { & $AgentConfig.Command @($AgentConfig.Args + @("-p", $Prompt)) 2>&1 }
-        "codex" { & $AgentConfig.Command @($AgentConfig.Args + @($Prompt)) 2>&1 }
+    $previousNativeErrorPreference = $PSNativeCommandUseErrorActionPreference
+    try {
+        $PSNativeCommandUseErrorActionPreference = $false
+        $output = switch ($AuthorKey) {
+            "claude" { & $AgentConfig.Command @($AgentConfig.Args + @($Prompt)) 2>&1 }
+            "gemini" { & $AgentConfig.Command @($AgentConfig.Args + @("-p", $Prompt)) 2>&1 }
+            "codex" { & $AgentConfig.Command @($AgentConfig.Args + @($Prompt)) 2>&1 }
+        }
+    } finally {
+        $PSNativeCommandUseErrorActionPreference = $previousNativeErrorPreference
     }
 
     $lines = @($output | ForEach-Object { $_.ToString() })

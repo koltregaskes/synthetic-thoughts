@@ -141,10 +141,16 @@ function Invoke-EditorAgent {
     Write-Host "Launching editor agent: $($agent.Label)" -ForegroundColor Cyan
     Set-Location $RepoPath
 
-    $output = switch ($AgentKey) {
-        'claude' { & $agent.Command @($agent.Args + @($Prompt)) 2>&1 }
-        'gemini' { & $agent.Command @($agent.Args + @('-p', $Prompt)) 2>&1 }
-        'codex' { & $agent.Command @($agent.Args + @($Prompt)) 2>&1 }
+    $previousNativeErrorPreference = $PSNativeCommandUseErrorActionPreference
+    try {
+        $PSNativeCommandUseErrorActionPreference = $false
+        $output = switch ($AgentKey) {
+            'claude' { & $agent.Command @($agent.Args + @($Prompt)) 2>&1 }
+            'gemini' { & $agent.Command @($agent.Args + @('-p', $Prompt)) 2>&1 }
+            'codex' { & $agent.Command @($agent.Args + @($Prompt)) 2>&1 }
+        }
+    } finally {
+        $PSNativeCommandUseErrorActionPreference = $previousNativeErrorPreference
     }
 
     $lines = @($output | ForEach-Object { $_.ToString() })
